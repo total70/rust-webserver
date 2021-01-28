@@ -7,3 +7,9 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+serde = { version = "1.0.123", features = ["derive"]}
+serde_json = "1.0.61"
+tokio = { version = "1.1.0", features = ["full"]}
+warp = "0.3.0"
+uuid = { version = "0.8.2", features = ["serde", "v4"]}
+futures = { version = "0.3.12", default-features = false}
