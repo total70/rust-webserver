@@ -13,12 +13,15 @@ type Clients = Arc<RwLock<HashMap<String, structs::client::Client>>>;
 async fn main() {
     println!("Starting up webserver...");
 
+    let clients: Clients = Arc::new(RwLock::new(HashMap::new()));
+
     let health_check = warp::get()
     .and(warp::path("health_check"))
     .and_then(handlers::health_check::get);
 
     let generate_uuid = warp::get()
     .and(warp::path("generate"))
+    .and(with_clients(clients.clone()))
     .and_then(handlers::generate_uuid::get);
 
     let routes = health_check
