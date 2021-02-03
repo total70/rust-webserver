@@ -2,11 +2,13 @@ use std::collections::HashMap;
 use std::convert::Infallible;
 use std::sync::Arc;
 use tokio::sync::{mpsc, RwLock};
-use warp::Filter;
+use warp::{Filter, Rejection};
 
 mod handlers;
 mod structs;
+mod websocket;
 
+type Result<T> = std::result::Result<T, Rejection>;
 type Clients = Arc<RwLock<HashMap<String, structs::client::Client>>>;
 
 #[tokio::main]
@@ -24,8 +26,15 @@ async fn main() {
     .and(with_clients(clients.clone()))
     .and_then(handlers::generate_uuid::get);
 
+    let ws_route = warp::path("ws")
+    .and(warp::ws())
+    .and(warp::path::param())
+    .and(with_clients(clients.clone()))
+    .and_then(handlers::ws::set_websocket_connection);
+
     let routes = health_check
-        .or(generate_uuid);
+        .or(generate_uuid)
+        .or(ws_route);
 
     warp::serve(routes)
         .run(([127, 0, 0, 1], 3030))
