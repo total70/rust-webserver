@@ -5,9 +5,11 @@ use warp::{Reply, Rejection};
 
 
 async fn register_client(uuid: String, clients: Clients) {
+  let copy = uuid.clone();
   clients.write().await.insert(
-    uuid,
+    copy,
     Client {
+      uuid: uuid,
       sender: None
     }
   );

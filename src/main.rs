@@ -26,6 +26,12 @@ async fn main() {
     .and(with_clients(clients.clone()))
     .and_then(handlers::generate_uuid::get);
 
+    let publish = warp::post()
+    .and(warp::path("publish"))
+    .and(warp::body::json())
+    .and(with_clients(clients.clone()))
+    .and_then(handlers::publish::post);
+
     let ws_route = warp::path("ws")
     .and(warp::ws())
     .and(warp::path::param())
@@ -34,6 +40,7 @@ async fn main() {
 
     let routes = health_check
         .or(generate_uuid)
+        .or(publish)
         .or(ws_route);
 
     warp::serve(routes)
