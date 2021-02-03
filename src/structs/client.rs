@@ -1,4 +1,4 @@
-use tokio::sync::{mpsc};
+use futures::channel::mpsc;
 use std::result::Result;
 use warp::{ws::Message, Error};
 
