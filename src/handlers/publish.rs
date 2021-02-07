@@ -1,7 +1,7 @@
-use crate::{structs::client::Client, Clients, Result};
-use serde::{Deserialize, Serialize};
-use uuid::Uuid;
-use warp::{http::StatusCode, reply::json, ws::Message, Reply, Rejection};
+use crate::{Clients, Result};
+use serde::{Deserialize};
+use std::collections::HashMap;
+use warp::{ws::Message, Reply};
 
 #[derive(Deserialize, Debug)]
 pub struct Event {
@@ -23,9 +23,7 @@ pub async fn post(body: Event, clients: Clients) -> Result<impl Reply> {
       let _ = sender.unbounded_send(Ok(Message::text(body.category.clone())));
     }
   });
-  //Ok()
-  Ok(warp::reply::with_status(
-    "hello",
-    StatusCode::OK
-  ))
+  let mut response = HashMap::new();
+  response.insert("status", "event_send");
+  Ok(warp::reply::json(&response))
 }
